@@ -4,9 +4,12 @@ import net.proteanit.sql.DbUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +20,7 @@ public class Main  {
     private JPanel table_Panel;
     private JPanel category_Panel ;
     private Connection connection = null ;
+    private JLayeredPane layeredPane = null ;
 
     public static void main(String[] args){
         try{
@@ -68,48 +72,99 @@ public class Main  {
         topPanel.add(logo);
         frame.add(topPanel);
 
+        Font font = new Font("Arial",Font.PLAIN,16);
+        JLabel phone = new JLabel("Phone : 012 34 56 78");
+        phone.setFont(font);
+        phone.setBounds(1000,80,200,20);
+        JLabel email = new JLabel("Email : e-market@gmail.com");
+        email.setFont(font);
+        email.setBounds(1000,110,300,20);
+        JLabel fb = new JLabel("Fb :       E-Market ");
+        fb.setFont(font);
+        fb.setBounds(1000,140,200,20);
+
+
+        topPanel.add(phone);
+        topPanel.add(email);
+        topPanel.add(fb);
+
     }
 
     private void init_bottom(){
-        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane = new JLayeredPane();
 
         layeredPane.setBackground(Color.WHITE);
         layeredPane.setOpaque(true);
         layeredPane.setBounds(0,180,frame.getWidth(), frame.getHeight() - 180);
         layeredPane.add(new JLabel("Hello"));
-        category_Panel = new JPanel(null);
-        category_Panel.setBounds(0,0,layeredPane.getWidth(),layeredPane.getHeight());
-        category_Panel.setBackground(Color.WHITE);
-        category_Panel.add(newCategory("Phnoe Case",Color.YELLOW,Color.WHITE,80,20));
-//        layeredPane.add(category_Panel);
-
-        table_Panel = new JPanel(null);
-        table_Panel.setBounds(layeredPane.getBounds());
-        table_Panel.setBackground(Color.white);
-        table_Panel.setOpaque(true);
-//        table_Panel.add(table);
-//        table_Panel.add(table_scrollPane);
-//        table_Panel.setVisible(true);
-//        frame.getContentPane().add(table_Panel);
-//        layeredPane.add(table_Panel);
+        init_categoryPanel();
+        init_tablePanel();
 
         layeredPane.removeAll();
-        category_Panel.add(new JLabel("hello word"));
         layeredPane.add(category_Panel);
-        layeredPane.repaint();
         layeredPane.revalidate();
         frame.add(layeredPane);
     }
 
-    private JLabel newCategory(String Name, Color backgroundColor, Color foregroundColor, int X, int Y){
-        JLabel category = new JLabel(Name);
-        category.setBounds(X, Y, 250, 300);
-        category.setHorizontalAlignment(JLabel.CENTER);
-        category.setFont(new Font("Arial", Font.PLAIN, 40));
-        category.setForeground(foregroundColor);
-        category.setOpaque(true);
-        category.setBackground(backgroundColor);
-        return category;
+    private void init_back_button(){
+        JButton button = new JButton("");
+        button.setLocation(0,0);
+        button.setSize(new Dimension(35 ,35));
+        button.setBackground(Color.gray);
+        button.setHorizontalAlignment(JButton.CENTER);
+        button.setVerticalAlignment(JButton.CENTER);
+        button.transferFocus();
+        try{
+            button.setIcon(new ImageIcon(scaleImage(new File("Image\\back.png"),(int)(button.getWidth() * 0.7),(int)(button.getHeight() * 0.7))));
+
+        }catch (NullPointerException e){
+            e.printStackTrace();
+            button.setText("Back");
+        }
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                layeredPane.removeAll();
+                layeredPane.add(category_Panel);
+                layeredPane.repaint();
+                layeredPane.revalidate();
+            }
+        });
+        table_Panel.add(button);
+
+    }
+    private void init_tablePanel(){
+        layeredPane.removeAll();
+        table_Panel = new JPanel(null);
+        table_Panel.setBounds(0,0,layeredPane.getWidth(),layeredPane.getHeight());
+        init_back_button();
+
+        table_Panel.setBackground(Color.white);
+        table_Panel.setOpaque(true);
+        layeredPane.add(table_Panel);
+    }
+    private void init_categoryPanel(){
+        layeredPane.removeAll();
+        category_Panel = new JPanel(null);
+        category_Panel.setLocation(0,0);
+        category_Panel.setSize(new Dimension((int)layeredPane.getWidth(),(int)layeredPane.getHeight()));
+        category_Panel.setBackground(Color.WHITE);
+
+        Color color[] = {Color.YELLOW,Color.BLUE,Color.GREEN};
+        String[] category = Category.getAll();
+        CategoryLabel categoryLabel = new CategoryLabel();
+        JLabel temp = new JLabel();
+        short index = 0 ;
+        for(short i = 0 ; i < category.length / 4 ; i++){
+            for(short j = 0 ; j < 4 ; j++){
+                temp = CategoryLabel.getCategoryLabel(category[index],color[i],Color.WHITE,(j * 80 + j * 220) + 90, (i*110 + i * 50)+ 40);
+                temp.addMouseListener(categoryLabel);
+                category_Panel.add(temp);
+                index++;
+            }
+        }
+
+        layeredPane.add(category_Panel);
     }
 
     private void table(){
