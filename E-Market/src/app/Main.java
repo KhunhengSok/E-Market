@@ -10,6 +10,8 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +22,7 @@ public class Main  {
     private JPanel table_Panel;
     private JPanel category_Panel ;
     private Connection connection = null ;
-    private JLayeredPane layeredPane = null ;
+    public JLayeredPane layeredPane = null ;
 
     public static void main(String[] args){
         try{
@@ -102,6 +104,7 @@ public class Main  {
 
         layeredPane.removeAll();
         layeredPane.add(category_Panel);
+//        layeredPane.add(table_Panel);
         layeredPane.revalidate();
         frame.add(layeredPane);
     }
@@ -134,13 +137,20 @@ public class Main  {
 
     }
     private void init_tablePanel(){
-        layeredPane.removeAll();
         table_Panel = new JPanel(null);
         table_Panel.setBounds(0,0,layeredPane.getWidth(),layeredPane.getHeight());
+        layeredPane.removeAll();
+        table_Panel.setLayout(null);
+        JPanel table = TableLayout.getTableLayout();
+        table.setBounds(0,40,layeredPane.getWidth(),layeredPane.getHeight());
+//        table.setLocation(0,40);
+        System.out.println(table.getWidth() + "   " + table.getHeight() );
+
         init_back_button();
 
-        table_Panel.setBackground(Color.white);
-        table_Panel.setOpaque(true);
+        table.setBackground(Color.white);
+        table.setOpaque(true);
+        table_Panel.add(table);
         layeredPane.add(table_Panel);
     }
     private void init_categoryPanel(){
@@ -157,8 +167,36 @@ public class Main  {
         short index = 0 ;
         for(short i = 0 ; i < category.length / 4 ; i++){
             for(short j = 0 ; j < 4 ; j++){
-                temp = CategoryLabel.getCategoryLabel(category[index],color[i],Color.WHITE,(j * 80 + j * 220) + 90, (i*110 + i * 50)+ 40);
-                temp.addMouseListener(categoryLabel);
+                temp = CategoryLabel.getCategoryLabel(category[index],color[i],Color.WHITE,(j * 80 + j * 220) + 70, (i*110 + i * 50)+ 40);
+                temp.addMouseListener(new MouseListener(){
+
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        System.out.print("Click");
+                        layeredPane.removeAll();
+                        layeredPane.add(table_Panel);
+                        layeredPane.repaint();
+                        layeredPane.revalidate();
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        mouseClicked(e);
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        mouseClicked(e);
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                    }
+                });
                 category_Panel.add(temp);
                 index++;
             }

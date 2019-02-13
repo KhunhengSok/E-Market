@@ -22,7 +22,14 @@ public class CategoryLabel implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         JLabel label = (JLabel)e.getSource();
         System.out.println(label.getText());;
-    }
+        JLayeredPane layeredPane = (JLayeredPane)((JLabel) e.getSource()).getParent();
+//        layeredPane.remove(((JLabel) e.getSource()).getParent());
+//        layeredPane.add()
+        System.out.println(layeredPane.getClass());
+        layeredPane.removeAll();
+        layeredPane.repaint();
+        layeredPane.revalidate();
+     }
 
     @Override
     public void mousePressed(MouseEvent e) {
